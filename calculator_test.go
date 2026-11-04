@@ -33,3 +33,24 @@ func TestGetVolumeFlowKg(t *testing.T) {
 		t.Errorf("Expected %q error, got %q error instead", NegativeMassFlowKgSError.Error(), err)
 	}
 }
+
+func TestGetPipeDiameter(t *testing.T) {
+	volumeFlowM3S := 0.013699
+	velocity := 0.8
+
+	diameter, err := GetPipeDiameter(volumeFlowM3S, velocity)
+	expected := 0.147657
+	if err != nil || math.Abs(expected-diameter) > TOLERANCE {
+		t.Errorf("Expected %f,nil with %f tolerance, got %f,%v instead", expected, TOLERANCE, diameter, err)
+	}
+
+	_, err = GetPipeDiameter(volumeFlowM3S, 0)
+	if !errors.Is(err, DivideByZeroError) {
+		t.Errorf("Expected %q error, got %q error instead", DivideByZeroError.Error(), err)
+	}
+
+	_, err = GetPipeDiameter(volumeFlowM3S, -1)
+	if !errors.Is(err, NegativeVelocityError) {
+		t.Errorf("Expected %q error, got %q error instead", NegativeVelocityError.Error(), err)
+	}
+}
