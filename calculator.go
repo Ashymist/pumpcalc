@@ -1,6 +1,6 @@
 package pumpcalc
 
-func GetVolumeFlowKg(massFlowKgS float64, density float64) (float64, error) {
+func GetVolumeFlowM3S(massFlowKgS float64, density float64) (float64, error) {
 	if density <= 0 {
 		return 0, DivideByZeroError
 	}
