@@ -1,6 +1,7 @@
 package pumpcalc_test
 
 import (
+	"errors"
 	"math"
 	"testing"
 
@@ -21,7 +22,14 @@ func TestGetVolumeFlowKg(t *testing.T) {
 
 	density = 0
 	volumeFlowKg, err = GetVolumeFlowKg(massFlowKgS, density)
-	if err == nil || volumeFlowKg != 0.0 {
-		t.Errorf("Can't divide by zero")
+	if !errors.Is(err, DivideByZeroError) || volumeFlowKg != 0.0 {
+		t.Errorf("Expected %q error, got %q error instead", DivideByZeroError.Error(), err)
+	}
+
+	density = 730
+	massFlowKgS = -1
+	volumeFlowKg, err = GetVolumeFlowKg(massFlowKgS, density)
+	if !errors.Is(err, NegativeMassFlowKgSError) || volumeFlowKg != 0.0 {
+		t.Errorf("Expected %q error, got %q error instead", NegativeMassFlowKgSError.Error(), err)
 	}
 }
