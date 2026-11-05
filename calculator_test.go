@@ -61,3 +61,25 @@ func TestGetPipeDiameter(t *testing.T) {
 		t.Errorf("Expected %q error, got %q error instead", NegativeVelocityError.Error(), err)
 	}
 }
+
+func TestGetReynoldsNumber(t *testing.T) {
+	velocity := 0.8
+	pipeDiameter := 0.1477
+	viscosity := 0.7 * 1e-6
+
+	reynold, err := GetReynoldsNumber(velocity, pipeDiameter, viscosity)
+	expected := 1.688 * 1e+5
+	if err != nil || math.Abs(expected-reynold) > TOLERANCE {
+		t.Errorf("Expected %f,nil with %f tolerance, got %f,%q instead", expected, TOLERANCE, reynold, err)
+	}
+
+	_, err = GetReynoldsNumber(velocity, pipeDiameter, 0)
+	if !errors.Is(err, DivideByZeroError) {
+		t.Errorf("Expected %q error, got %q error instead", DivideByZeroError.Error(), err)
+	}
+
+	_, err = GetReynoldsNumber(velocity, pipeDiameter, -1)
+	if !errors.Is(err, NegativeKinematicViscosityError) {
+		t.Errorf("Expected %q error, got %q error instead", DivideByZeroError.Error(), err)
+	}
+}

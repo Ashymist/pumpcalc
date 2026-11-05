@@ -24,3 +24,13 @@ func GetPipeDiameter(volumeFlowM3S float64, fluidVelocity float64) (float64, err
 
 	return math.Sqrt((4 * volumeFlowM3S) / (math.Pi * fluidVelocity)), nil
 }
+
+func GetReynoldsNumber(fluidVelocity float64, pipeDiameter float64, kinematicViscosity float64) (float64, error) {
+	if kinematicViscosity == 0 {
+		return 0, DivideByZeroError
+	} else if kinematicViscosity < 0 {
+		return 0, NegativeKinematicViscosityError
+	}
+
+	return (fluidVelocity * pipeDiameter) / kinematicViscosity, nil
+}
