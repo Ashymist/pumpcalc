@@ -32,6 +32,13 @@ func TestGetVolumeFlowKg(t *testing.T) {
 	if !errors.Is(err, NegativeMassFlowKgSError) || volumeFlowM3S != 0.0 {
 		t.Errorf("Expected %q error, got %q error instead", NegativeMassFlowKgSError.Error(), err)
 	}
+
+	density = -1
+	massFlowKgS = 10.0
+	_, err = GetVolumeFlowM3S(massFlowKgS, density)
+	if !errors.Is(err, NegativeDensityError) {
+		t.Errorf("Expected %q error, got %q error instead", NegativeMassFlowKgSError.Error(), err)
+	}
 }
 
 func TestGetPipeDiameter(t *testing.T) {
