@@ -135,3 +135,15 @@ func TestCalculatePumpFlow(t *testing.T) {
 		t.Errorf("Expected %q error, got %v error instead", DivideByZeroError.Error(), err)
 	}
 }
+
+func TestCalculatePumpPressure(t *testing.T) {
+	density := 730.0
+	gravity := 9.81
+	pumpFlow := 30.642
+
+	pressure := CalculatePumpPressure(pumpFlow, density, gravity)
+	expected := 219436.5546
+	if math.Abs(expected-pressure) > TOLERANCE {
+		t.Errorf("Expected %f with %f tolerance, got %f instead", expected, TOLERANCE, pressure)
+	}
+}
