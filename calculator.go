@@ -63,3 +63,12 @@ func CalculatePumpFlow(fluidHeightReserv float64, fluidHeightNeeded float64, pre
 func CalculatePumpPressure(pumpFlow float64, density float64, gravity float64) float64 {
 	return density * gravity * pumpFlow
 }
+
+func CalculatePumpNozzlePressureBefore(pressureReserv float64, density float64, gravity float64,
+	heightBefore float64, lossesBefore float64, velocityBefore float64) (float64, error) {
+	if gravity == 0 {
+		return 0, DivideByZeroError
+	}
+
+	return pressureReserv + density*gravity*(heightBefore-lossesBefore-(math.Pow(velocityBefore, 2)/(2*gravity))), nil
+}
