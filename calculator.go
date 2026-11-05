@@ -46,3 +46,16 @@ func CalculateLossesOnPipe(pipeLength float64, pipeDiameter float64, frictionCoe
 
 	return (frictionCoefficient*(pipeLength/pipeDiameter) + frictionSum) * ((math.Pow(fluidVelocity, 2)) / (2 * gravity)), nil
 }
+
+func CalculatePumpFlow(fluidHeightReserv float64, fluidHeightNeeded float64, pressureReserv float64,
+	pressureNeeded float64, density float64, gravity float64, velocityBeforePump float64, velocityAfterPump float64,
+	lossesBeforePump float64, lossesAfterPump float64) (float64, error) {
+	if gravity == 0 || density == 0 {
+		return 0, DivideByZeroError
+	}
+
+	return (fluidHeightNeeded - fluidHeightReserv) +
+		((pressureNeeded - pressureReserv) / (density * gravity)) +
+		((math.Pow(velocityAfterPump, 2) - math.Pow(velocityBeforePump, 2)) / (2 * gravity)) +
+		lossesAfterPump + lossesBeforePump, nil
+}

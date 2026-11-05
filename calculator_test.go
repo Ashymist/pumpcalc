@@ -108,3 +108,30 @@ func TestCalculatePipeLosses(t *testing.T) {
 		t.Errorf("Expected %q error, got %v error instead", NotPositiveGravityError.Error(), err)
 	}
 }
+
+func TestCalculatePumpFlow(t *testing.T) {
+	heightAfter := 26.0
+	heightBefore := 4.0
+	pressureBefore := 101300.0
+	pressureAfter := 122500.0
+	density := 730.0
+	gravity := 9.81
+	velocityAfter := 2.0
+	lossesBeforePump := 0.391
+	lossesAfterPump := 5.087
+
+	flow, err := CalculatePumpFlow(heightBefore, heightAfter, pressureBefore,
+		pressureAfter, density, gravity,
+		0, velocityAfter, lossesBeforePump, lossesAfterPump)
+	expected := 30.642230
+	if err != nil || math.Abs(expected-flow) > TOLERANCE {
+		t.Errorf("Expected %f,nil with %f tolerance, got %f,%v instead", expected, TOLERANCE, flow, err)
+	}
+
+	_, err = CalculatePumpFlow(heightBefore, heightAfter, pressureBefore,
+		pressureAfter, 0, 0,
+		0, velocityAfter, lossesBeforePump, lossesAfterPump)
+	if !errors.Is(err, DivideByZeroError) {
+		t.Errorf("Expected %q error, got %v error instead", DivideByZeroError.Error(), err)
+	}
+}
