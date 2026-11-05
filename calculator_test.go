@@ -156,14 +156,28 @@ func TestCalculatePumpNozzlePressureBefore(t *testing.T) {
 	losses := 0.391
 	velocity := 0.8
 
-	pressure, err := CalculatePumpNozzlePressureBefore(pressure, density, gravity, height, losses, velocity)
+	pressureBefore, err := CalculatePumpNozzlePressureBefore(pressure, density, gravity, height, losses, velocity)
 	expected := 126911.5317
-	if err != nil || math.Abs(expected-pressure) > TOLERANCE {
-		t.Errorf("Expected %f,nil with %f tolerance, got %f,%v instead", expected, TOLERANCE, pressure, err)
+	if err != nil || math.Abs(expected-pressureBefore) > TOLERANCE {
+		t.Errorf("Expected %f,nil with %f tolerance, got %f,%v instead", expected, TOLERANCE, pressureBefore, err)
 	}
 
 	_, err = CalculatePumpNozzlePressureBefore(pressure, density, 0, height, losses, velocity)
 	if !errors.Is(err, DivideByZeroError) {
 		t.Errorf("Expected %q error, got %v error instead", DivideByZeroError.Error(), err)
+	}
+}
+
+func TestCalculatePumpNozzlePressureAfter(t *testing.T) {
+	pressure := 122500.0
+	density := 730.0
+	gravity := 9.81
+	height := 26.0
+	losses := 5.087
+
+	pressureAfter := CalculatePumpNozzlePressureAfter(pressure, density, gravity, height, losses)
+	expected := 345123.3331
+	if math.Abs(expected-pressureAfter) > TOLERANCE {
+		t.Errorf("Expected %f with %f tolerance, got %f instead", expected, TOLERANCE, pressureAfter)
 	}
 }
