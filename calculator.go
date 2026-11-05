@@ -34,3 +34,15 @@ func GetReynoldsNumber(fluidVelocity float64, pipeDiameter float64, kinematicVis
 
 	return (fluidVelocity * pipeDiameter) / kinematicViscosity, nil
 }
+
+func CalculateLossesOnPipe(pipeLength float64, pipeDiameter float64, frictionCoefficient float64,
+	frictionSum float64, fluidVelocity float64, gravity float64) (float64, error) {
+	if frictionCoefficient <= 0 {
+		return 0, NotPositiveFrictionCoefficientError
+	}
+	if gravity <= 0 {
+		return 0, NotPositiveGravityError
+	}
+
+	return (frictionCoefficient*(pipeLength/pipeDiameter) + frictionSum) * ((math.Pow(fluidVelocity, 2)) / (2 * gravity)), nil
+}

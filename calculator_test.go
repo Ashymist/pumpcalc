@@ -23,21 +23,21 @@ func TestGetVolumeFlowKg(t *testing.T) {
 	density = 0
 	volumeFlowM3S, err = GetVolumeFlowM3S(massFlowKgS, density)
 	if !errors.Is(err, DivideByZeroError) || volumeFlowM3S != 0.0 {
-		t.Errorf("Expected %q error, got %q error instead", DivideByZeroError.Error(), err)
+		t.Errorf("Expected %q error, got %v error instead", DivideByZeroError.Error(), err)
 	}
 
 	density = 730
 	massFlowKgS = -1
 	volumeFlowM3S, err = GetVolumeFlowM3S(massFlowKgS, density)
 	if !errors.Is(err, NegativeMassFlowKgSError) || volumeFlowM3S != 0.0 {
-		t.Errorf("Expected %q error, got %q error instead", NegativeMassFlowKgSError.Error(), err)
+		t.Errorf("Expected %q error, got %v error instead", NegativeMassFlowKgSError.Error(), err)
 	}
 
 	density = -1
 	massFlowKgS = 10.0
 	_, err = GetVolumeFlowM3S(massFlowKgS, density)
 	if !errors.Is(err, NegativeDensityError) {
-		t.Errorf("Expected %q error, got %q error instead", NegativeMassFlowKgSError.Error(), err)
+		t.Errorf("Expected %q error, got %v error instead", NegativeMassFlowKgSError.Error(), err)
 	}
 }
 
@@ -53,12 +53,12 @@ func TestGetPipeDiameter(t *testing.T) {
 
 	_, err = GetPipeDiameter(volumeFlowM3S, 0)
 	if !errors.Is(err, DivideByZeroError) {
-		t.Errorf("Expected %q error, got %q error instead", DivideByZeroError.Error(), err)
+		t.Errorf("Expected %q error, got %v error instead", DivideByZeroError.Error(), err)
 	}
 
 	_, err = GetPipeDiameter(volumeFlowM3S, -1)
 	if !errors.Is(err, NegativeVelocityError) {
-		t.Errorf("Expected %q error, got %q error instead", NegativeVelocityError.Error(), err)
+		t.Errorf("Expected %q error, got %v error instead", NegativeVelocityError.Error(), err)
 	}
 }
 
@@ -70,16 +70,41 @@ func TestGetReynoldsNumber(t *testing.T) {
 	reynold, err := GetReynoldsNumber(velocity, pipeDiameter, viscosity)
 	expected := 1.688 * 1e+5
 	if err != nil || math.Abs(expected-reynold) > TOLERANCE {
-		t.Errorf("Expected %f,nil with %f tolerance, got %f,%q instead", expected, TOLERANCE, reynold, err)
+		t.Errorf("Expected %f,nil with %f tolerance, got %f,%v instead", expected, TOLERANCE, reynold, err)
 	}
 
 	_, err = GetReynoldsNumber(velocity, pipeDiameter, 0)
 	if !errors.Is(err, DivideByZeroError) {
-		t.Errorf("Expected %q error, got %q error instead", DivideByZeroError.Error(), err)
+		t.Errorf("Expected %q error, got %v error instead", DivideByZeroError.Error(), err)
 	}
 
 	_, err = GetReynoldsNumber(velocity, pipeDiameter, -1)
 	if !errors.Is(err, NegativeKinematicViscosityError) {
-		t.Errorf("Expected %q error, got %q error instead", DivideByZeroError.Error(), err)
+		t.Errorf("Expected %q error, got %v error instead", DivideByZeroError.Error(), err)
+	}
+}
+
+func TestCalculatePipeLosses(t *testing.T) {
+	frictionCoef := 0.022
+	length := 28.0
+	diameter := 0.1477
+	frictionSum := 7.8
+	velocity := 0.8
+	gravity := 9.81
+
+	losses, err := CalculateLossesOnPipe(length, diameter, frictionCoef, frictionSum, velocity, gravity)
+	expected := 0.390479
+	if err != nil || math.Abs(expected-losses) > TOLERANCE {
+		t.Errorf("Expected %f,nil with %f tolerance, got %f,%v instead", expected, TOLERANCE, losses, err)
+	}
+
+	_, err = CalculateLossesOnPipe(length, diameter, 0, frictionSum, velocity, gravity)
+	if !errors.Is(err, NotPositiveFrictionCoefficientError) {
+		t.Errorf("Expected %q error, got %v error instead", NotPositiveFrictionCoefficientError.Error(), err)
+	}
+
+	_, err = CalculateLossesOnPipe(length, diameter, frictionCoef, frictionSum, velocity, 0)
+	if !errors.Is(err, NotPositiveGravityError) {
+		t.Errorf("Expected %q error, got %v error instead", NotPositiveGravityError.Error(), err)
 	}
 }
